@@ -16,8 +16,9 @@ public class Morphology
 	private int[][] tempAry;    // Same size as `zeroFramedAry`, to be used as the intermediate result within opening/closing operations
 	private int[][] structAry;    // a dynamically-allocated 2D array of size [`numStructRows`]×[`numStructCols`]
 
-	public Morphology() {
-
+	public Morphology(BufferedReader inFile, BufferedReader structFile) throws IOException {
+		initImgValuesFromHeader(inFile);
+		initStructValuesFromHeader(structFile);
 	}
 
 	public static void main(String args[]) throws IOException {
@@ -30,13 +31,27 @@ public class Morphology
 			String[] headerTokens = headerLine.split("\\s+");
 			numImgRows = Integer.parseInt(headerTokens[0]);
 			numImgCols = Integer.parseInt(headerTokens[1]);
-			numStructRows = Integer.parseInt(headerTokens[2]);
-			numStructCols = Integer.parseInt(headerTokens[3]);
+			imgMin = Integer.parseInt(headerTokens[2]);
+			imgMax = Integer.parseInt(headerTokens[3]);
 		}
 	}
 
 	private void initStructValuesFromHeader(BufferedReader structFile) throws IOException {
+		String headerLine = structFile.readLine();
+		if (headerLine != null) {
+			String[] headerTokens = headerLine.split("\\s+");
+			numStructRows = Integer.parseInt(headerTokens[0]);
+			numStructCols = Integer.parseInt(headerTokens[1]);
+			structMin = Integer.parseInt(headerTokens[2]);
+			structMax = Integer.parseInt(headerTokens[3]);
+		}
 
+		String origin = structFile.readLine();
+		if (origin != null) {
+			String[] originTokens = origin.split("\\s+");
+			rowOrigin = Integer.parseInt(originTokens[0]);
+			colOrigin = Integer.parseInt(originTokens[1]);
+		}
 	}
 
 	private static void validateArguments(String[] args) {
