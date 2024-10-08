@@ -1,4 +1,6 @@
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 
 public class Morphology
@@ -8,10 +10,10 @@ public class Morphology
 	private int numStructRows, numStructCols, structMin, structMax;    // from `structFile.txt`
 	private int rowOrigin, colOrigin;    // from `structFile.txt`
 
-	private int rowFrameSize, colFrameSize;    // set to (`numStructRows`/2), (`numStructCols`/2)
-	private int extraRows, extraCols;    // set to (`rowFrameSize`*2), (`colFrameSize`*2)
+	private int rowFrameSize, colFrameSize;        // set to (`numStructRows`/2), (`numStructCols`/2)
+	private int extraRows, extraCols;        // set to (`rowFrameSize`*2), (`colFrameSize`*2)
 	private int rowSize, colSize;    // set to (`numImgRows`+`extraRows`), (`numImgCols`+`extraCols`)
-	private int[][] zeroFramedAry;    // a dynamically-allocated 2D array of size [`rowSize`]×[`colSize`]
+	int[][] zeroFramedAry;    // a dynamically-allocated 2D array of size [`rowSize`]×[`colSize`]
 	private int[][] morphAry;    // Same size as `zeroFramedAry`
 	private int[][] tempAry;    // Same size as `zeroFramedAry`, to be used as the intermediate result within opening/closing operations
 	private int[][] structAry;    // a dynamically-allocated 2D array of size [`numStructRows`]×[`numStructCols`]
@@ -29,6 +31,72 @@ public class Morphology
 		morphAry = new int[rowSize][colSize];
 		tempAry = new int[rowSize][colSize];
 		structAry = new int[numStructRows][numStructCols];
+	}
+
+	public int getNumImgRows() {return numImgRows;}
+	public void setNumImgRows(int numImgRows) {this.numImgRows = numImgRows;}
+	public int getNumImgCols() {return numImgCols;}
+	public void setNumImgCols(int numImgCols) {this.numImgCols = numImgCols;}
+	public int getImgMin() {return imgMin;}
+	public void setImgMin(int imgMin) {this.imgMin = imgMin;}
+	public int getImgMax() {return imgMax;}
+	public void setImgMax(int imgMax) {this.imgMax = imgMax;}
+	public int getNumStructRows() {return numStructRows;}
+	public void setNumStructRows(int numStructRows) {this.numStructRows = numStructRows;}
+	public int getNumStructCols() {return numStructCols;}
+	public void setNumStructCols(int numStructCols) {this.numStructCols = numStructCols;}
+	public int getStructMin() {return structMin;}
+	public void setStructMin(int structMin) {this.structMin = structMin;}
+	public int getStructMax() {return structMax;}
+	public void setStructMax(int structMax) {this.structMax = structMax;}
+	public int getRowOrigin() {return rowOrigin;}
+	public void setRowOrigin(int rowOrigin) {this.rowOrigin = rowOrigin;}
+	public int getColOrigin() {return colOrigin;}
+	public void setColOrigin(int colOrigin) {this.colOrigin = colOrigin;}
+	public int getRowFrameSize() {return rowFrameSize;}
+	public void setRowFrameSize(int rowFrameSize) {this.rowFrameSize = rowFrameSize;}
+	public int getColFrameSize() {return colFrameSize;}
+	public void setColFrameSize(int colFrameSize) {this.colFrameSize = colFrameSize;}
+	public int getExtraRows() {return extraRows;}
+	public void setExtraRows(int extraRows) {this.extraRows = extraRows;}
+	public int getExtraCols() {return extraCols;}
+	public void setExtraCols(int extraCols) {this.extraCols = extraCols;}
+	public int getRowSize() {return rowSize;}
+	public int getColSize() {return colSize;}
+	public int[][] getZeroFramedAry() {return zeroFramedAry;}
+	public void setZeroFramedAry(int[][] zeroFramedAry) {this.zeroFramedAry = zeroFramedAry;}
+	public int[][] getMorphAry() {return morphAry;}
+	public void setMorphAry(int[][] morphAry) {this.morphAry = morphAry;}
+	public int[][] getTempAry() {return tempAry;}
+	public void setTempAry(int[][] tempAry) {this.tempAry = tempAry;}
+	public int[][] getStructAry() {return structAry;}
+	public void setStructAry(int[][] structAry) {this.structAry = structAry;}
+
+	public int[][] zero2DAry(int[][] ary, int nRows, int nCols) {
+		for (int i = 0; i < nRows; i++)
+			for (int j = 0; j < nCols; j++)
+				ary[i][j] = 0;
+
+		return ary;
+	}
+
+	public void loadImg(String inFile) throws IOException {
+		BufferedReader bufferedReader = new BufferedReader(new FileReader(inFile));
+
+		bufferedReader.readLine();
+		for (int i = rowOrigin; i < numImgRows; i++) {
+			String line = bufferedReader.readLine();
+			String[] pixelValues = line.split("\\s+");
+			for (int j = colOrigin; j < numImgCols; j++)
+				zeroFramedAry[i][j] = Integer.parseInt(pixelValues[j]);
+
+		}
+
+		bufferedReader.close();
+	}
+
+	public void onePixelDilation(int i, int j, int[][] inAry, int[][] outAry) {
+
 	}
 
 	private void initImgValuesFromHeader(BufferedReader inFile) throws IOException {
