@@ -106,7 +106,19 @@ public class Morphology
 	}
 
 	public void onePixelDilation(int i, int j, int[][] inAry, int[][] outAry) {
+		int iOffset = i - rowOrigin;
+		int jOffset = j - colOrigin;
 
+		for (int r = 0; r < rowSize; r++)
+			for (int c = 0; c < colSize; c++)
+				if (structAry[r][c] > 0)
+					outAry[iOffset + r][jOffset + c] = 1;
+	}
+
+	public void onePixelErosion(int i, int j, int[][] inAry, int[][] outAry) {
+		int iOffset = i - rowOrigin;
+		int jOffset = j - colOrigin;
+		boolean matchFlag = true;
 	}
 
 	public void binaryPrettyPrint(int[][] inAry, BufferedWriter outFile) throws IOException {
