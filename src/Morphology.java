@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 
 public class Morphology
 {
@@ -81,28 +78,53 @@ public class Morphology
 	}
 
 	public void loadImg(String inFile) throws IOException {
-		BufferedReader bufferedReader = new BufferedReader(new FileReader(inFile));
+		BufferedReader br = new BufferedReader(new FileReader(inFile));
 
-		bufferedReader.readLine();
+		br.readLine();
 		for (int i = rowOrigin; i < numImgRows; i++) {
-			String line = bufferedReader.readLine();
+			String line = br.readLine();
 			String[] pixelValues = line.split("\\s+");
 			for (int j = colOrigin; j < numImgCols; j++)
 				zeroFramedAry[i][j] = Integer.parseInt(pixelValues[j]);
-
 		}
 
-		bufferedReader.close();
+		br.close();
+	}
+
+	public void loadStruct(String structFile) throws IOException {
+		BufferedReader br = new BufferedReader(new FileReader(structFile));
+
+		for (int i = 0; i < 2; i++) br.readLine();
+		for (int i = 0; i < numStructRows; i++) {
+			String line = br.readLine();
+			String[] pixelValues = line.split("\\s+");
+			for (int j = 0; j < numStructCols; j++)
+				structAry[i][j] = Integer.parseInt(pixelValues[j]);
+		}
+
+		br.close();
 	}
 
 	public void onePixelDilation(int i, int j, int[][] inAry, int[][] outAry) {
 
 	}
 
+	public void binaryPrettyPrint(int[][] inAry, BufferedWriter outFile) throws IOException {
+		for (int i = 0; i < inAry.length; i++) {
+			for (int j = 0; j < inAry[i].length; j++) {
+				if (inAry[i][j] == 0)
+					outFile.write(". ");
+				else
+					outFile.write("1 ");
+			}
+			outFile.write('\n');
+		}
+	}
+
 	private void initImgValuesFromHeader(BufferedReader inFile) throws IOException {
-		String headerLine = inFile.readLine();
-		if (headerLine != null) {
-			String[] headerTokens = headerLine.split("\\s+");
+		String header = inFile.readLine();
+		if (header != null) {
+			String[] headerTokens = header.split("\\s+");
 			numImgRows = Integer.parseInt(headerTokens[0]);
 			numImgCols = Integer.parseInt(headerTokens[1]);
 			imgMin = Integer.parseInt(headerTokens[2]);
@@ -111,9 +133,9 @@ public class Morphology
 	}
 
 	private void initStructValuesFromHeader(BufferedReader structFile) throws IOException {
-		String headerLine = structFile.readLine();
-		if (headerLine != null) {
-			String[] headerTokens = headerLine.split("\\s+");
+		String header = structFile.readLine();
+		if (header != null) {
+			String[] headerTokens = header.split("\\s+");
 			numStructRows = Integer.parseInt(headerTokens[0]);
 			numStructCols = Integer.parseInt(headerTokens[1]);
 			structMin = Integer.parseInt(headerTokens[2]);
