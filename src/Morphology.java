@@ -4,9 +4,9 @@ import java.io.IOException;
 public class Morphology
 {
 	/* Get from `inFile.txt` and `structFile`: */
-	private int numImgRows, numImgCols, imgMin, imgMax;	// from `inFile.txt`
-	private int numStructRows, numStructCols, structMin, structMax;	// from `structFile.txt`
-	private int rowOrigin, colOrigin;	// from `structFile.txt`
+	private int numImgRows, numImgCols, imgMin, imgMax;    // from `inFile.txt`
+	private int numStructRows, numStructCols, structMin, structMax;    // from `structFile.txt`
+	private int rowOrigin, colOrigin;    // from `structFile.txt`
 
 	private int rowFrameSize, colFrameSize;    // set to (`numStructRows`/2), (`numStructCols`/2)
 	private int extraRows, extraCols;    // set to (`rowFrameSize`*2), (`colFrameSize`*2)
@@ -29,10 +29,6 @@ public class Morphology
 		morphAry = new int[rowSize][colSize];
 		tempAry = new int[rowSize][colSize];
 		structAry = new int[numStructRows][numStructCols];
-	}
-
-	public static void main(String args[]) throws IOException {
-		validateArguments(args);
 	}
 
 	private void initImgValuesFromHeader(BufferedReader inFile) throws IOException {
@@ -61,13 +57,6 @@ public class Morphology
 			String[] originTokens = origin.split("\\s+");
 			rowOrigin = Integer.parseInt(originTokens[0]);
 			colOrigin = Integer.parseInt(originTokens[1]);
-		}
-	}
-
-	private static void validateArguments(String[] args) {
-		if (args.length!=4) {
-			System.err.println("\nYou must have exactly 4 arguments: inFile.txt structFile.txt choice# prettyFile.txt");
-			System.exit(1);
 		}
 	}
 }
