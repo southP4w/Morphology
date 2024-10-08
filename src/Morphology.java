@@ -19,6 +19,16 @@ public class Morphology
 	public Morphology(BufferedReader inFile, BufferedReader structFile) throws IOException {
 		initImgValuesFromHeader(inFile);
 		initStructValuesFromHeader(structFile);
+		rowFrameSize = (numStructRows/2);
+		colFrameSize = (numStructCols/2);
+		extraRows = (rowFrameSize*2);
+		extraCols = (colFrameSize);
+		rowSize = (numImgRows + extraRows);
+		colSize = (numImgCols + extraCols);
+		zeroFramedAry = new int[rowSize][colSize];
+		morphAry = new int[rowSize][colSize];
+		tempAry = new int[rowSize][colSize];
+		structAry = new int[numStructRows][numStructCols];
 	}
 
 	public static void main(String args[]) throws IOException {
