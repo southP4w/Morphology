@@ -6,12 +6,13 @@ import java.io.IOException;
 
 public class Main
 {
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		validateArguments(args);
 		try (
 			BufferedReader inFile = new BufferedReader(new FileReader(args[0]));
 			BufferedReader structFile = new BufferedReader(new FileReader(args[1]));
 			BufferedWriter prettyFile = new BufferedWriter(new FileWriter(args[3]));
+			BufferedWriter outFile = new BufferedWriter(new FileWriter("dilationOutFile.txt"))
 		) {
 			Morphology m = new Morphology(inFile, structFile);
 
@@ -23,10 +24,8 @@ public class Main
 			m.loadStruct(args[1]);
 			prettyFile.write("Below is the output of the `binaryPrettyPrint` method using `structAry`:\n");
 			m.binaryPrettyPrint(m.getStructAry(), prettyFile);
-			int choice = Integer.parseInt(args[2]);
-
 		} catch (IOException ioException) {
-
+			throw new RuntimeException(ioException);
 		}
 	}
 
