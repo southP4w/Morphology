@@ -17,10 +17,13 @@ public class Main
 
 			m.zero2DAry(m.getZeroFramedAry(), m.getZeroFramedAry().length, m.getZeroFramedAry()[0].length);
 			m.loadImg(args[0]);
-			m.loadStruct(args[1]);
 			prettyFile.write("Below is the output of the `binaryPrettyPrint` method using `zeroFramedAry`:\n");
 			m.binaryPrettyPrint(m.getZeroFramedAry(), prettyFile);
-
+			m.zero2DAry(m.getStructAry(), m.getNumStructRows(), m.getNumStructCols());
+			m.loadStruct(args[1]);
+			prettyFile.write("Below is the output of the `binaryPrettyPrint` method using `structAry`:\n");
+			m.binaryPrettyPrint(m.getStructAry(), prettyFile);
+			int choice = Integer.parseInt(args[2]);
 
 		} catch (IOException ioException) {
 
