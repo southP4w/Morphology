@@ -18,7 +18,9 @@ public class Main
 			m.zero2DAry(m.getZeroFramedAry(), m.getZeroFramedAry().length, m.getZeroFramedAry()[0].length);
 			m.loadImg(args[0]);
 			m.loadStruct(args[1]);
+			prettyFile.write("Below is the output of the `binaryPrettyPrint` method using `zeroFramedAry`:\n");
 			m.binaryPrettyPrint(m.getZeroFramedAry(), prettyFile);
+
 
 		} catch (IOException ioException) {
 

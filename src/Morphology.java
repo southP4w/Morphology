@@ -94,8 +94,8 @@ public class Morphology
 	public void loadStruct(String structFile) throws IOException {
 		BufferedReader br = new BufferedReader(new FileReader(structFile));
 
-		for (int i = 0; i < 2; i++) br.readLine();
-		for (int i = 0; i < numStructRows; i++) {
+		for (int i = 0; i < 2; i++) br.readLine();    // skip header and origin values
+		for (int i = 0; i < numStructRows; i++) {    // load `structFile` into `structAry`
 			String line = br.readLine();
 			String[] pixelValues = line.split("\\s+");
 			for (int j = 0; j < numStructCols; j++)
@@ -105,25 +105,9 @@ public class Morphology
 		br.close();
 	}
 
-	public void onePixelDilation(int i, int j, int[][] inAry, int[][] outAry) {
-		int iOffset = i - rowOrigin;
-		int jOffset = j - colOrigin;
-
-		for (int r = 0; r < rowSize; r++)
-			for (int c = 0; c < colSize; c++)
-				if (structAry[r][c] > 0)
-					outAry[iOffset + r][jOffset + c] = 1;
-	}
-
-	public void onePixelErosion(int i, int j, int[][] inAry, int[][] outAry) {
-		int iOffset = i - rowOrigin;
-		int jOffset = j - colOrigin;
-		boolean matchFlag = true;
-	}
-
 	public void binaryPrettyPrint(int[][] inAry, BufferedWriter outFile) throws IOException {
 		for (int i = 0; i < inAry.length; i++) {
-			for (int j = 0; j < inAry[i].length; j++) {
+			for (int j = 0; j < inAry[0].length; j++) {
 				if (inAry[i][j] == 0)
 					outFile.write(". ");
 				else
@@ -131,6 +115,56 @@ public class Morphology
 			}
 			outFile.write('\n');
 		}
+	}
+
+	public void computeOpening() {
+		computeErosion(zeroFramedAry, tempAry);
+		computeDilation(tempAry, morphAry);
+	}
+
+	public void computeClosing() {
+		computeDilation(zeroFramedAry, tempAry);
+		computeErosion(tempAry, morphAry);
+	}
+
+	public void computeDilation(int[][] inAry, int[][] outAry) {
+		for (int i = rowFrameSize; i < rowSize; i++)
+			for (int j = colFrameSize; j < colSize; j++)
+				if (inAry[i][j] > 0)
+					onePixelDilation(i, j, inAry, outAry);
+	}
+
+	public void computeErosion(int[][] inAry, int[][] outAry) {
+		for (int i = rowFrameSize; i < rowSize; i++)
+			for (int j = colFrameSize; j < colSize; j++)
+				if (inAry[i][j] > 0)
+					onePixelErosion(i, j, inAry, outAry);
+	}
+
+	private void onePixelDilation(int i, int j, int[][] inAry, int[][] outAry) {
+		int iOffset = i - rowOrigin;
+		int jOffset = j - colOrigin;
+
+		for (int r = 0; r < numStructRows; r++)
+			for (int c = 0; c < numStructCols; c++)
+				if (structAry[r][c] > 0)
+					outAry[iOffset + r][jOffset + c] = 1;
+	}
+
+	private void onePixelErosion(int i, int j, int[][] inAry, int[][] outAry) {
+		int iOffset = i - rowOrigin;
+		int jOffset = j - colOrigin;
+		boolean matchFlag = true;
+
+		for (int r = 0; r < numStructRows && matchFlag; r++)
+			for (int c = 0; c < numStructCols && matchFlag; c++)
+				if (structAry[r][c] > 0 && inAry[iOffset + r][jOffset + c] <= 0)
+					matchFlag = false;
+
+		if (matchFlag)
+			outAry[i][j] = 1;
+		else
+			outAry[i][j] = 0;
 	}
 
 	private void initImgValuesFromHeader(BufferedReader inFile) throws IOException {
