@@ -106,6 +106,7 @@ public class Morphology
 	}
 
 	public void binaryPrettyPrint(int[][] inAry, BufferedWriter outFile) throws IOException {
+		outFile.write('\n');
 		for (int i = 0; i < inAry.length; i++) {
 			for (int j = 0; j < inAry[0].length; j++) {
 				if (inAry[i][j] == 0)
@@ -114,6 +115,16 @@ public class Morphology
 					outFile.write("1 ");
 			}
 			outFile.write('\n');
+		}
+	}
+
+	public void aryToFile(int[][] inAry, BufferedWriter fileOut) throws IOException {
+		fileOut.write(numImgRows + " " + numImgCols + " " + imgMin + " " + imgMax + "\n");
+
+		for (int i = 0; i < rowSize; i++) {
+			for (int j = 0; j < colSize; j++)
+				fileOut.write(inAry[i][j] + " ");
+			fileOut.write("\n");
 		}
 	}
 
