@@ -18,11 +18,12 @@ public class Main
 			m.zero2DAry(m.getZeroFramedAry(), m.getZeroFramedAry().length, m.getZeroFramedAry()[0].length);
 			m.loadImg(args[0]);
 			prettyFile.write("\nBelow is the output of the `binaryPrettyPrint` method using `zeroFramedAry`:");
-			prettyFile.write("\n" + m.getNumImgRows() + " " + m.getNumImgCols() + " " + m.getImgMin() + " " + m.getImgMax());
+			prettyFile.write("\n" + m.getRowSize() + " " + m.getColSize() + " " + m.getImgMin() + " " + m.getImgMax());
 			m.binaryPrettyPrint(m.getZeroFramedAry(), prettyFile);
 			m.zero2DAry(m.getStructAry(), m.getNumStructRows(), m.getNumStructCols());
 			m.loadStruct(args[1]);
 			prettyFile.write("\nBelow is the output of the `binaryPrettyPrint` method using `structAry`:");
+			prettyFile.write("\n" + m.getRowSize() + " " + m.getColSize() + " " + m.getImgMin() + " " + m.getImgMax());
 			m.binaryPrettyPrint(m.getStructAry(), prettyFile);
 			int choice = Integer.parseInt(args[2]);
 			if (choice < 1 || choice > 5) {
@@ -48,6 +49,8 @@ public class Main
 			m.zero2DAry(m.getMorphAry(), m.getRowSize(), m.getColSize());
 			m.computeDilation(m.zeroFramedAry, m.getMorphAry());
 			m.aryToFile(m.getMorphAry(), outFile);
+			prettyFile.write("\nBelow is the result of DILATION on the original image:");
+			prettyFile.write("\n" + m.getRowSize() + " " + m.getColSize() + " " + m.getImgMin() + " " + m.getImgMax());
 			m.binaryPrettyPrint(m.getMorphAry(), prettyFile);
 		} catch (IOException ioException) {
 			throw new RuntimeException(ioException);
@@ -59,6 +62,8 @@ public class Main
 			m.zero2DAry(m.getMorphAry(), m.getRowSize(), m.getColSize());
 			m.computeErosion(m.zeroFramedAry, m.getMorphAry());
 			m.aryToFile(m.getMorphAry(), outFile);
+			prettyFile.write("\nBelow is the result of EROSION on the original image:");
+			prettyFile.write("\n" + m.getRowSize() + " " + m.getColSize() + " " + m.getImgMin() + " " + m.getImgMax());
 			m.binaryPrettyPrint(m.getMorphAry(), prettyFile);
 		} catch (IOException ioException) {
 			throw new RuntimeException(ioException);
@@ -70,6 +75,8 @@ public class Main
 			m.zero2DAry(m.getMorphAry(), m.getRowSize(), m.getColSize());
 			m.computeOpening();
 			m.aryToFile(m.getMorphAry(), outFile);
+			prettyFile.write("\nBelow is the result of OPENING (Erosion followed by Dilation) on the original image:");
+			prettyFile.write("\n" + m.getRowSize() + " " + m.getColSize() + " " + m.getImgMin() + " " + m.getImgMax());
 			m.binaryPrettyPrint(m.getMorphAry(), prettyFile);
 		} catch (IOException ioException) {
 			throw new RuntimeException(ioException);
@@ -81,6 +88,8 @@ public class Main
 			m.zero2DAry(m.getMorphAry(), m.getRowSize(), m.getColSize());
 			m.computeClosing();
 			m.aryToFile(m.getMorphAry(), outFile);
+			prettyFile.write("\nBelow is the result of CLOSING (Dilation followed by Erosion) on the original image:");
+			prettyFile.write("\n" + m.getRowSize() + " " + m.getColSize() + " " + m.getImgMin() + " " + m.getImgMax());
 			m.binaryPrettyPrint(m.getMorphAry(), prettyFile);
 		} catch (IOException ioException) {
 			throw new RuntimeException(ioException);
