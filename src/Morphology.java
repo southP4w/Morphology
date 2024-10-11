@@ -1,19 +1,21 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class Morphology
 {
-	/* Get from `inFile.txt` and `structFile`: */
-	private int numImgRows, numImgCols, imgMin, imgMax;    // from `inFile.txt`
-	private int numStructRows, numStructCols, structMin, structMax;    // from `structFile.txt`
-	private int rowOrigin, colOrigin;    // from `structFile.txt`
+	private int numImgRows, numImgCols, imgMin, imgMax;              // from `inFile.txt`
+	private int numStructRows, numStructCols, structMin, structMax;  // from `structFile.txt`
+	private int rowOrigin, colOrigin;                                // from `structFile.txt`
 
-	private int rowFrameSize, colFrameSize;        // set to (`numStructRows`/2), (`numStructCols`/2)
-	private int extraRows, extraCols;        // set to (`rowFrameSize`*2), (`colFrameSize`*2)
-	private int rowSize, colSize;    // set to (`numImgRows`+`extraRows`), (`numImgCols`+`extraCols`)
-	int[][] zeroFramedAry;    // a dynamically-allocated 2D array of size [`rowSize`]×[`colSize`]
-	private int[][] morphAry;    // Same size as `zeroFramedAry`
-	private int[][] tempAry;    // Same size as `zeroFramedAry`, to be used as the intermediate result within opening/closing operations
-	private int[][] structAry;    // a dynamically-allocated 2D array of size [`numStructRows`]×[`numStructCols`]
+	private int rowFrameSize, colFrameSize; // set to (`numStructRows`/2), (`numStructCols`/2)
+	private int extraRows, extraCols;       // set to (`rowFrameSize`*2), (`colFrameSize`*2)
+	private int rowSize, colSize;           // set to (`numImgRows`+`extraRows`), (`numImgCols`+`extraCols`)
+	int[][] zeroFramedAry;                  // a dynamically-allocated 2D array of size [`rowSize`]×[`colSize`]
+	private int[][] morphAry;               // Same size as `zeroFramedAry`
+	private int[][] tempAry;                // Same size as `zeroFramedAry`, to be used as the intermediate result within opening/closing operations
+	private int[][] structAry;              // a dynamically-allocated 2D array of size [`numStructRows`]×[`numStructCols`]
 
 	public Morphology(BufferedReader inFile, BufferedReader structFile) throws IOException {
 		initImgValuesFromHeader(inFile);
@@ -21,7 +23,7 @@ public class Morphology
 		rowFrameSize = (numStructRows/2);
 		colFrameSize = (numStructCols/2);
 		extraRows = (rowFrameSize*2);
-		extraCols = (colFrameSize);
+		extraCols = (colFrameSize*2);
 		rowSize = (numImgRows + extraRows);
 		colSize = (numImgCols + extraCols);
 		zeroFramedAry = new int[rowSize][colSize];
@@ -78,49 +80,47 @@ public class Morphology
 	}
 
 	public void loadImg(String inFile) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader(inFile));
+		BufferedReader bufferedReader = new BufferedReader(new FileReader(inFile));
 
-		br.readLine();
-		for (int i = rowOrigin; i < numImgRows; i++) {
-			String line = br.readLine();
+		bufferedReader.readLine();    // skip header
+		for (int i = 0; i < numImgRows; i++) {
+			String line = bufferedReader.readLine();
 			String[] pixelValues = line.split("\\s+");
-			for (int j = colOrigin; j < numImgCols; j++)
-				zeroFramedAry[i][j] = Integer.parseInt(pixelValues[j]);
+			for (int j = 0; j < numImgCols; j++)
+				zeroFramedAry[i + rowFrameSize][j + colFrameSize] = Integer.parseInt(pixelValues[j]);
 		}
 
-		br.close();
+		bufferedReader.close();
 	}
 
 	public void loadStruct(String structFile) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader(structFile));
+		BufferedReader bufferedReader = new BufferedReader(new FileReader(structFile));
 
-		for (int i = 0; i < 2; i++) br.readLine();    // skip header and origin values
-		for (int i = 0; i < numStructRows; i++) {    // load `structFile` into `structAry`
-			String line = br.readLine();
+		for (int i = 0; i < 2; i++) bufferedReader.readLine(); // skip header and origin values
+		for (int i = 0; i < numStructRows; i++) {              // load `structFile` into `structAry`
+			String line = bufferedReader.readLine();
 			String[] pixelValues = line.split("\\s+");
 			for (int j = 0; j < numStructCols; j++)
 				structAry[i][j] = Integer.parseInt(pixelValues[j]);
 		}
 
-		br.close();
+		bufferedReader.close();
 	}
 
 	public void binaryPrettyPrint(int[][] inAry, BufferedWriter outFile) throws IOException {
 		outFile.write('\n');
 		for (int i = 0; i < inAry.length; i++) {
-			for (int j = 0; j < inAry[0].length; j++) {
+			for (int j = 0; j < inAry[0].length; j++)
 				if (inAry[i][j] == 0)
 					outFile.write(". ");
 				else
 					outFile.write("1 ");
-			}
 			outFile.write('\n');
 		}
 	}
 
 	public void aryToFile(int[][] inAry, BufferedWriter fileOut) throws IOException {
 		fileOut.write(numImgRows + " " + numImgCols + " " + imgMin + " " + imgMax + "\n");
-
 		for (int i = 0; i < rowSize; i++) {
 			for (int j = 0; j < colSize; j++)
 				fileOut.write(inAry[i][j] + " ");
@@ -139,15 +139,15 @@ public class Morphology
 	}
 
 	public void computeDilation(int[][] inAry, int[][] outAry) {
-		for (int i = rowFrameSize; i < rowSize; i++)
-			for (int j = colFrameSize; j < colSize; j++)
+		for (int i = rowFrameSize; i < rowSize - rowFrameSize; i++)
+			for (int j = colFrameSize; j < colSize - colFrameSize; j++)
 				if (inAry[i][j] > 0)
 					onePixelDilation(i, j, inAry, outAry);
 	}
 
 	public void computeErosion(int[][] inAry, int[][] outAry) {
-		for (int i = rowFrameSize; i < rowSize; i++)
-			for (int j = colFrameSize; j < colSize; j++)
+		for (int i = rowFrameSize; i < rowSize - rowFrameSize; i++)
+			for (int j = colFrameSize; j < colSize - colFrameSize; j++)
 				if (inAry[i][j] > 0)
 					onePixelErosion(i, j, inAry, outAry);
 	}
@@ -155,7 +155,6 @@ public class Morphology
 	private void onePixelDilation(int i, int j, int[][] inAry, int[][] outAry) {
 		int iOffset = i - rowOrigin;
 		int jOffset = j - colOrigin;
-
 		for (int r = 0; r < numStructRows; r++)
 			for (int c = 0; c < numStructCols; c++)
 				if (structAry[r][c] > 0)
@@ -166,12 +165,10 @@ public class Morphology
 		int iOffset = i - rowOrigin;
 		int jOffset = j - colOrigin;
 		boolean matchFlag = true;
-
 		for (int r = 0; r < numStructRows && matchFlag; r++)
 			for (int c = 0; c < numStructCols && matchFlag; c++)
 				if (structAry[r][c] > 0 && inAry[iOffset + r][jOffset + c] <= 0)
 					matchFlag = false;
-
 		if (matchFlag)
 			outAry[i][j] = 1;
 		else
@@ -191,16 +188,15 @@ public class Morphology
 
 	private void initStructValuesFromHeader(BufferedReader structFile) throws IOException {
 		String header = structFile.readLine();
-		if (header != null) {
+		if (header != null) {        // get header values (line 1)
 			String[] headerTokens = header.split("\\s+");
 			numStructRows = Integer.parseInt(headerTokens[0]);
 			numStructCols = Integer.parseInt(headerTokens[1]);
 			structMin = Integer.parseInt(headerTokens[2]);
 			structMax = Integer.parseInt(headerTokens[3]);
 		}
-
 		String origin = structFile.readLine();
-		if (origin != null) {
+		if (origin != null) {        // get origin values (line 2)
 			String[] originTokens = origin.split("\\s+");
 			rowOrigin = Integer.parseInt(originTokens[0]);
 			colOrigin = Integer.parseInt(originTokens[1]);
